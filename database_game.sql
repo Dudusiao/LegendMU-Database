@@ -1,4 +1,8 @@
+DROP DATABASE database_game;
 
+CREATE DATABASE database_game;
+
+USE database_game;
 
 CREATE TABLE account_data (
     account_id INT NOT NULL,
