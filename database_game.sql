@@ -1,983 +1,690 @@
-DROP DATABASE IF EXISTS database_game;
-
-CREATE DATABASE database_game;
-
-USE database_game;
-
-CREATE TABLE account_data (
-    account_id INT NOT NULL,
-    vip_status int,
-    vip_duration int,
-    expanded_warehouse int,
-    expanded_warehouse_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    special_character int,
-    credits int,
-    web_credits int,
-    current_character int,
-    current_type int,
-    current_ip VARCHAR(45),
-    current_mac VARCHAR(45),
-    current_diskserial VARCHAR(45),
-    current_server int,
-    PRIMARY KEY (account_id)
-);
-
-CREATE TABLE character_info (
-    guid INT NOT NULL,
-	slot int,
-	authority int,
-	race int,
-	name VARCHAR(45),
-	level int,
-	level_master int,
-	experience int,
-	experience_master int,
-	points int,
-	points_master int,
-	strength int,
-	agility int,
-	vitality int,
-	energy int,
-	leadership int,
-	world int,
-	world_x int,
-	world_y int,
-	direction int,
-	money int,
-	life int,
-	mana int,
-	shield int,
-	stamina int,
-	add_fruit_points int,
-	dec_fruit_points int,
-	expanded_inventory int,
-	mute_time datetime(6),
-	admin_flags int,
-	pk_level int,
-	pk_count int,
-	pk_points int,
-	first_time datetime(6),
-	santa_claus_gift int,
-	personal_store_name VARCHAR(45),
-	goblin_points int,
-	kick_time datetime(6),
-	account_id int,
-	post_count int,
-	post_day int,
-	post_month int,
-	ruud_money int,
-	level_majestic int,
-	experience_majestic int,
-	points_majestic int,
-	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	hunting_log_visible int,
-	personal_store_open int,
-	PRIMARY KEY (guid),
-    FOREIGN KEY (account_id) REFERENCES account_data(account_id)
-);
-
-CREATE TABLE account_warehouse (
-    id INT NOT NULL,
-    account_id int,
-    money int,
-    password VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES account_data(account_id)
-);
-
-CREATE TABLE account_buff (
-    id INT NOT NULL,
-    account_id int,
-    buff int,
-	effect_1 int,
-	value_1 int,
-	effect_2 int,
-	value_2 int,
-	effect_3 int,
-	value_3 int,
-	duration int,
-	flags int,
-	PRIMARY KEY (id),
-	FOREIGN KEY (account_id) REFERENCES account_data(account_id)
-);
-CREATE TABLE character_skill (
-    id INT NOT NULL,
-    char_id int,
-    type int,
-    skill int,
-    skill_level int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_gameoption (
-    id INT NOT NULL,
-    char_id int,
-    game_option int,
-    chat_window int,
-	q_key int,
-	w_key int,
-	e_key int,
-	r_key int,
-	qwer_level int,
-	skill_bind_0 int,
-	skill_bind_1 int,
-	skill_bind_2 int,
-	skill_bind_3 int,
-	skill_bind_4 int,
-	skill_bind_5 int,
-	skill_bind_6 int,
-	skill_bind_7 int,
-	skill_bind_8 int,
-	skill_bind_9 int,
-	extra_data int,
-	change_skin int,
-	additional_options int,
-	button_bind_1 int,
-	button_bind_2 int,
-	button_bind_3 int,
-	button_bind_4 int,
-	button_bind_5 int,
-	PRIMARY KEY (id),
-	FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-CREATE TABLE character_quest_evo (
-    id INT NOT NULL,
-    char_id int,
-    state int,
-    kill_count_1 int,
-    kill_count_2 int,
-    kill_count_3 int,
-    kill_count_4 int,
-    kill_count_5 int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-CREATE TABLE character_friend (
-    id INT NOT NULL,
-    char_id int,
-    friend_name VARCHAR(45),
-    server_code int,
-    online int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-CREATE TABLE character_mail (
-    id INT NOT NULL,
-    char_id int,
-    subject VARCHAR(45),
-    message VARCHAR(45),
-    direction VARCHAR(45),
-    action int,
-    photo int,
-    window_guid int,
-    date datetime(6),
-    opened int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE guild_list (
-    guild_id INT NOT NULL,
-    guid int,
-    name VARCHAR(45),
-    emblem varbinary(32),
-    notice VARCHAR(45),
-    alliance int,
-    hostil int,
-    score int,
-    PRIMARY KEY (guild_id)
-);
-
-CREATE TABLE guild_members (
-    id INT NOT NULL,
-    char_id int,
-    guild_id int,
-    ranking int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid),
-    FOREIGN KEY (guild_id) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE character_gens (
-    id INT NOT NULL,
-    char_id int,
-    family int,
-    level int,
-    contribution int,
-    reward_date datetime(6),
-    join_date datetime(6),
-    left_date datetime(6),
-    ranking int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_gens_kill (
-   	id INT NOT NULL,
-    char_id int,
-    killed_id int,
-    count int,
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_helper (
-    id INT NOT NULL,
-    char_id int,
-    option_flag_1 int,
-	option_flag_2 int,
-	item_pick_flag int,
-	hunting_range int,
-	item_pick_range int,
-	distance int,
-	attack_skill_1 int,
-	attack_sec_skill_1 int,
-	attack_sec_skill_2 int,
-	attack_sec_delay_1 int,
-	attack_sec_delay_2 int,
-	buff_skill_1 int,
-	buff_skill_2 int,
-	buff_skill_3 int,
-	time_space_casting int,
-	percent_autopot int,
-	percent_autoheal int,
-	percent_partyheal int,
-	percent_drainlife int,
-	item_list int,
-	buff_item_1 int,
-	buff_item_2 int,
-	buff_item_3 int,
-	PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_buff (
-    id INT NOT NULL,
-    char_id int,
-    character_buff int,
-    effect_1 int,
-    value_1 int,
-    effect_2 int,
-    value_2 int,
-    effect_3 int,
-    value_3 int,
-    duration int,
-    flags int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_restriction (
-    id INT NOT NULL,
-    char_id int,
-    restriction int,
-    time datetime(6),
-    admin_name VARCHAR(45),
-    reason VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_statistics (
-    statistic_id INT NOT NULL,
-    char_id int,
-    count int,
-    PRIMARY KEY (statistic_id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_item_delay (
-    id INT NOT NULL,
-    char_id int,
-    item int,
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_chat_block (
-    id INT NOT NULL,
-    char_id int,
-    blocked int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE party (
-    id INT NOT NULL,
-    guid INT,
-    server int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE party_member (
-    id INT NOT NULL,
-    char_id int,
-    server int,
-    party int,
-    member int,
-    position int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE account_cash_shop_item (
-    id INT NOT NULL,
-    account_id int,
-    product int,
-    `option` int,
-    serial VARCHAR(45),
-    serial_cash_shop VARCHAR(45),
-    `server` int,
-    gift int,
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES account_data(account_id)
-);
-
-CREATE TABLE item_data (
-    id INT NOT NULL,
-	box int,
-	slot int,
-	entry int,
-	`server` int,
-	serial int,
-	serial_cash_shop int,
-	`level` int,
-	durability int,
-	durability_state int,
-	skill int,
-	luck int,
-	`option` int,
-	excellent int,
-	ancient int,
-	option_380 int,
-	harmony int,
-	socket_1 int,
-	socket_2 int,
-	socket_3 int,
-	socket_4 int,
-	socket_5 int,
-	socket_bonus int,
-	locked int,
-	data_1 int,
-	data_2 int,
-	data_3 int,
-	personal_store_price int,
-	personal_store_job int,
-	personal_store_jos int,
-	expire_date datetime(6),
-	flags int,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE castle_siege_data (
-    id INT NOT NULL,
-    `owner` int,
-    `status` int,
-    tax_hunt int,
-    tax_chaos int,
-    tax_store int,
-    hunt_allowed int,
-    money int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE castle_siege_npc (
-    npc_id INT NOT NULL,
-    npc int,
-    id int,
-    defense_level int,
-    regen_level int,
-    life_level int,
-    life int,
-    PRIMARY KEY (npc_id)
-);
-
-CREATE TABLE castle_siege_guild (
-    id INT NOT NULL,
-    guild int,
-    side int,
-    score int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE castle_siege_registered_guild (
-    register_id INT NOT NULL,
-    guild int,
-    marks int,
-    PRIMARY KEY (register_id),
-    FOREIGN KEY (guild) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE server_signal (
-    id INT NOT NULL,
-    `server` int,
-    `signal` int,
-    data_1 int,
-    data_2 int,
-    data_3 int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE crywolf_data (
-    id INT NOT NULL,
-    state int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE character_kick (
-    id INT NOT NULL,
-    char_id int,
-    character_name VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE item_pentagram_data (
-    id INT NOT NULL,
-	type int,
-	`index` int,
-	attribute int,
-	tem_type int,
-	item_index int,
-	item_level int,
-	option_index_rank_1 int,
-	option_level_rank_1 int,
-	option_index_rank_2 int,
-	option_level_rank_2 int,
-	option_index_rank_3 int,
-	option_level_rank_3 int,
-	option_index_rank_4 int,
-	option_level_rank_4 int,
-	option_index_rank_5 int,
-	option_level_rank_5 int,
-	serial_server VARCHAR(45),
-	serial VARCHAR(45),
-	flags int,
-	data_1 int,
-	data_2 int,
-	data_3 int,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE guild_matching (
-    id INT NOT NULL,
-    guild_id int,
-    text VARCHAR(45),
-    interest_type int,
-    level_range int,
-    class_type int,
-    board_number int,
-    `level` int,
-    level_master int,
-    race int,
-    family int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE arka_war_data (
-    id INT NOT NULL,
-    guild int,
-    attribute int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE serial_check (
-    id INT NOT NULL,
-    `server` int,
-    serial int,
-    type int,
-    account_id int,
-    ip VARCHAR(45),
-    mac VARCHAR(45),
-    disk_serial VARCHAR(45),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE character_score (
-    id INT NOT NULL,
-    char_id int,
-    type int,
-    `level` int,
-    score int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_ranking (
-    event_id INT NOT NULL,
-    event_ground int,
-    char_id int,
-    score int,
-    PRIMARY KEY (event_id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE item_recovery (
-  id INT NOT NULL,
-  char_id int,
-  item int,
-	`level` int,
-	durability int,
-	skill int,
-	luck int,
-	`option` int,
-	excellent int,
-	ancient int,
-	option_380 int,
-	harmony int,
-	socket_1 int,
-	socket_2 int,
-	socket_3 int,
-	socket_4 int,
-	socket_5 int,
-	socket_bonus int,
-	data_1 int,
-	data_2 int,
-	data_3 int,
-	serial_server int,
-	serial int,
-	serial_cash_shop int,
-	flags int,
-	PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_hunting_record (
-    id INT NOT NULL,
-    char_id int,
-    world int,
-    year int,
-    month int,
-    day int,
-    level int,
-    duration int,
-    damage int,
-    elemental_damage int,
-    healing int,
-    killed_count int,
-    earned_experience int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE monster_respawn (
-    id INT NOT NULL,
-    `server` int,
-    guid int,
-    date int,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE character_labyrinth (
-    id INT NOT NULL,
-    char_id int,
-    stage int,
-    level int,
-    status int,
-    killed_monsters int,
-    earned_experience int,
-    completed_missions int,
-    date datetime(6),
-    goblin_state int,
-    day_first datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_labyrinth_zone (
-    id INT NOT NULL,
-    char_id int,
-    idx int,
-    subidx int,
-    mission_id_1 int,
-    mission_id_2 int,
-    mission_id_3 int,
-    mission_id_4 int,
-    mission_id_5 int,
-    mission_count_1 int,
-    mission_count_2 int,
-    mission_count_3 int,
-    mission_count_4 int,
-    mission_count_5 int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_labyrinth_level (
-    id INT NOT NULL,
-    char_id int,
-    level int,
-    amount int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_ranking_labyrinth (
-    id INT NOT NULL,
-    char_id int,
-    level int,
-    stage int,
-    `index` VARCHAR(45),
-    killed_monsters int,
-    earned_experience int,
-    completed_missions int,
-    score VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_event_count (
-    id INT NOT NULL,
-    char_id int,
-    event_id int,
-    count VARCHAR(45),
-    day datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-/** COMMON DATABASE **/
-CREATE TABLE character_mini_bomb (
-    id INT NOT NULL,
-    char_id int,
-    state VARCHAR(45),
-    score VARCHAR(45),
-    total_score VARCHAR(45),
-    cdate datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_mini_bomb_grid (
-    id INT NOT NULL,
-    char_id int,
-    cell VARCHAR(45),
-    `value` VARCHAR(45),
-    `status` VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_mini_bomb_ranking (
-    id INT NOT NULL,
-    char_id int,
-    state VARCHAR(45),
-    score VARCHAR(45),
-    bombs_founded int,
-    bombs_failed int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_mu_roomy (
-    id INT NOT NULL,
-    char_id int,
-    playing int,
-    type VARCHAR(45),
-    score VARCHAR(45),
-    card_count VARCHAR(45),
-    special_card_count int,
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_mu_roomy_deck (
-    id INT NOT NULL,
-		char_id int,
-    type VARCHAR(45),
-    slot VARCHAR(45),
-    color VARCHAR(45),
-    number VARCHAR(45),
-    state VARCHAR(45),
-    play_slot int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_mu_roomy_ranking (
-    id INT NOT NULL,
-    char_id int,
-    type VARCHAR(45),
-    score VARCHAR(45),
-    remain_card int,
-    remain_special_card int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_warp_favorite_list (
-    id INT NOT NULL,
-    char_id int,
-    slot VARCHAR(45),
-    `data` datetime(6),
-    warp_id VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_quest_guided (
-    id INT NOT NULL,
-    char_id int,
-    quest VARCHAR(45),
-    count VARCHAR(45),
-    state VARCHAR(45),
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_jewel_bingo (
-    id INT NOT NULL,
-    char_id int,
-    state VARCHAR(45),
-    box VARCHAR(45),
-    count VARCHAR(45),
-    score1 VARCHAR(45),
-    score2 VARCHAR(45),
-    score3 VARCHAR(45),
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_jewel_bingo_grid (
-    id INT NOT NULL,
-    char_id int,
-    type VARCHAR(45),
-    slot VARCHAR(45),
-    `value` VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_jewel_bingo_ranking (
-    id INT NOT NULL,
-    char_id int,
-    type VARCHAR(45),
-    score1 VARCHAR(45),
-    score2 VARCHAR(45),
-    score3 VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_scramble_ranking (
-    id INT NOT NULL,
-    char_id int,
-    word VARCHAR(45),
-    shuffle_word VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_race_ranking (
-    id INT NOT NULL,
-    char_id int,
-    race VARCHAR(45),
-    `start` VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE guild_score (
-    id INT NOT NULL,
-    guild_id int,
-    score int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (guild_id) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE event_castle_siege_ranking (
-    id INT NOT NULL,
-    guild_id int,
-    guild_name VARCHAR(45),
-    character_count VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (guild_id) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE event_castle_siege_time (
-    id INT NOT NULL,
-    char_id int,
-    char_name VARCHAR(45),
-    char_rank int,
-    player_data int,
-    guild_id int,
-    guild_name VARCHAR(45),
-    type VARCHAR(45),
-    time datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid),
-    FOREIGN KEY (guild_id) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE event_castle_siege_kill (
-    id INT NOT NULL,
-    char_id int,
-    char_name VARCHAR(45),
-    char_rank int,
-    state VARCHAR(45),
-    player_data_01 int,
-    guild_id_01 int,
-    guild_name_01 int,
-    killer_id int,
-    killer_name int,
-    killer_rank int,
-    player_data_02 int,
-    guild_id_02 int,
-    guild_name_02 int,
-    world int,
-    world_x int,
-    world_y int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_arka_war_kill (
-    id INT NOT NULL,
-    char_id int,
-    char_name VARCHAR(45),
-    char_rank int,
-    player_data_01 int,
-    guild_id_01 int,
-    guild_name_01 int,
-    killer_id int,
-    killer_name int,
-    killer_rank int,
-    player_data_02 int,
-    guild_id_02 int,
-    guild_name_02 int,
-    world int,
-    world_x int,
-    world_y int,
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_arka_war_ranking (
-    id INT NOT NULL,
-    guild_id_01 int,
-    guild_name_01 VARCHAR(45),
-    guild_id_02 int,
-    guild_name_02 VARCHAR(45),
-    character_count VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (guild_id_01) REFERENCES guild_list(guild_id),
-    FOREIGN KEY (guild_id_02) REFERENCES guild_list(guild_id)
-);
-
-CREATE TABLE character_deleted (
-    id INT NOT NULL,
-    account_id int,
-    char_id int,
-    name VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES account_data(account_id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_date (
-    id INT NOT NULL,
-    char_id int,
-    date VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_majestic_tree (
-    idm INT NOT NULL,
-    char_id int,
-    type VARCHAR(45),
-    section VARCHAR(45),
-    id int,
-    level VARCHAR(45),
-    PRIMARY KEY (idm),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_majestic_stats (
-    stats_id INT NOT NULL,
-    char_id int,
-    id int,
-    level VARCHAR(45),
-    PRIMARY KEY (stats_id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_numeric_baseball (
-    id INT NOT NULL,
-    char_id int,
-    state VARCHAR(45),
-    score VARCHAR(45),
-    number_1 VARCHAR(45),
-    number_2 VARCHAR(45),
-    number_3 VARCHAR(45),
-    numbers VARCHAR(45),
-    strikes VARCHAR(45),
-    balls VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_numeric_baseball_ranking (
-    id INT NOT NULL,
-    char_id int,
-    score VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_labyrinth_schedule (
-    id INT NOT NULL,
-    server VARCHAR(45),
-    state VARCHAR(45),
-    start_date datetime(6),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE event_labyrinth_league (
-    id INT NOT NULL,
-    category VARCHAR(45),
-    char_id int,
-    char_name VARCHAR(45),
-    char_class VARCHAR(45),
-    score VARCHAR(45),
-    league_score VARCHAR(45),
-    time datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE event_dungeon_instance (
-    dg_id INT NOT NULL,
-    char_id int,
-    id VARCHAR(45),
-    time datetime(6),
-    PRIMARY KEY (dg_id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_quest_mu (
-    id INT NOT NULL,
-    char_id int,
-    quest_id int,
-    state VARCHAR(45),
-    objective VARCHAR(45),
-    date datetime(6),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
-
-CREATE TABLE character_monster_soul (
-    soul_id INT NOT NULL,
-    char_id int,
-    type VARCHAR(45),
-    id int,
-    amount VARCHAR(45),
-    PRIMARY KEY (id),
-    FOREIGN KEY (char_id) REFERENCES character_info(guid)
-);
+-- MySQL dump 10.13  Distrib 8.0.23, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: gameserver
+-- ------------------------------------------------------
+-- Server version	8.0.23
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `buff_template`
+--
+
+DROP TABLE IF EXISTS `buff_template`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `buff_template` (
+  `buff` smallint unsigned NOT NULL,
+  `group` smallint unsigned DEFAULT NULL,
+  `item_type` tinyint unsigned DEFAULT NULL,
+  `item_index` smallint unsigned DEFAULT NULL,
+  `name` text,
+  `description` text,
+  `send` tinyint DEFAULT NULL,
+  `debuff` tinyint DEFAULT NULL,
+  `effect_1` tinyint unsigned DEFAULT NULL,
+  `value_1` float DEFAULT NULL,
+  `effect_2` tinyint unsigned DEFAULT NULL,
+  `value_2` float DEFAULT NULL,
+  `duration` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`buff`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `buff_template`
+--
+
+LOCK TABLES `buff_template` WRITE;
+/*!40000 ALTER TABLE `buff_template` DISABLE KEYS */;
+/*!40000 ALTER TABLE `buff_template` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cash_shop_category`
+--
+
+DROP TABLE IF EXISTS `cash_shop_category`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cash_shop_category` (
+  `id` smallint unsigned NOT NULL,
+  `name` text,
+  `parent` tinyint unsigned DEFAULT NULL,
+  `main` tinyint unsigned DEFAULT NULL,
+  `disabled` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cash_shop_category`
+--
+
+LOCK TABLES `cash_shop_category` WRITE;
+/*!40000 ALTER TABLE `cash_shop_category` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cash_shop_category` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cash_shop_package`
+--
+
+DROP TABLE IF EXISTS `cash_shop_package`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cash_shop_package` (
+  `package` int unsigned NOT NULL,
+  `category` int unsigned DEFAULT NULL,
+  `position` tinyint unsigned DEFAULT NULL,
+  `name` text,
+  `description` text,
+  `display_item` smallint unsigned DEFAULT NULL,
+  `flags` int unsigned DEFAULT NULL,
+  `price_type` tinyint unsigned DEFAULT NULL,
+  `start_date` bigint DEFAULT NULL,
+  `end_date` bigint DEFAULT NULL,
+  PRIMARY KEY (`package`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cash_shop_package`
+--
+
+LOCK TABLES `cash_shop_package` WRITE;
+/*!40000 ALTER TABLE `cash_shop_package` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cash_shop_package` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cash_shop_product`
+--
+
+DROP TABLE IF EXISTS `cash_shop_product`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cash_shop_product` (
+  `product` int unsigned NOT NULL,
+  `package` int unsigned DEFAULT NULL,
+  `option` int unsigned DEFAULT NULL,
+  `name` text,
+  `price` int unsigned DEFAULT NULL,
+  `buy_type` tinyint unsigned DEFAULT NULL,
+  `use_type` tinyint unsigned DEFAULT NULL,
+  `flags` int unsigned DEFAULT NULL,
+  `duration` bigint DEFAULT NULL,
+  `item_type` tinyint unsigned DEFAULT NULL,
+  `item_index` smallint unsigned DEFAULT NULL,
+  `item_durability` int DEFAULT NULL,
+  `item_skill` tinyint unsigned DEFAULT NULL,
+  `item_luck` tinyint unsigned DEFAULT NULL,
+  `item_option` tinyint unsigned DEFAULT NULL,
+  `item_excellent` tinyint unsigned DEFAULT NULL,
+  `item_ancient` tinyint unsigned DEFAULT NULL,
+  `count` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cash_shop_product`
+--
+
+LOCK TABLES `cash_shop_product` WRITE;
+/*!40000 ALTER TABLE `cash_shop_product` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cash_shop_product` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_base`
+--
+
+DROP TABLE IF EXISTS `character_base`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_base` (
+  `race` tinyint unsigned NOT NULL,
+  `stat_strength` int unsigned DEFAULT NULL,
+  `stat_agility` int unsigned DEFAULT NULL,
+  `stat_vitality` int unsigned DEFAULT NULL,
+  `stat_energy` int unsigned DEFAULT NULL,
+  `stat_leadership` int unsigned DEFAULT NULL,
+  `life` int DEFAULT NULL,
+  `mana` int DEFAULT NULL,
+  `level_to_life` float DEFAULT NULL,
+  `level_to_mana` float DEFAULT NULL,
+  `vitality_to_life` float DEFAULT NULL,
+  `energy_to_mana` float DEFAULT NULL,
+  `world` smallint unsigned DEFAULT NULL,
+  `level` smallint DEFAULT NULL,
+  `points` int DEFAULT NULL,
+  `recovery_life` float DEFAULT NULL,
+  `recovery_mana` float DEFAULT NULL,
+  `recovery_shield` float DEFAULT NULL,
+  `recovery_stamina` float DEFAULT NULL,
+  `level_up_points` int unsigned DEFAULT NULL,
+  `plus_level_up_points` int unsigned DEFAULT NULL,
+  `master_level_up_points` int unsigned DEFAULT NULL,
+  `majestic_level_up_points` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`race`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_base`
+--
+
+LOCK TABLES `character_base` WRITE;
+/*!40000 ALTER TABLE `character_base` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_base` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_bonus`
+--
+
+DROP TABLE IF EXISTS `character_bonus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_bonus` (
+  `server` smallint unsigned NOT NULL,
+  `level_min` smallint DEFAULT NULL,
+  `level_max` smallint DEFAULT NULL,
+  `experience_rate` smallint DEFAULT NULL,
+  `drop_rate` smallint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_bonus`
+--
+
+LOCK TABLES `character_bonus` WRITE;
+/*!40000 ALTER TABLE `character_bonus` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_bonus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_experience_adjust`
+--
+
+DROP TABLE IF EXISTS `character_experience_adjust`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_experience_adjust` (
+  `level_min` smallint DEFAULT NULL,
+  `level_max` smallint DEFAULT NULL,
+  `experience_rate` smallint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_experience_adjust`
+--
+
+LOCK TABLES `character_experience_adjust` WRITE;
+/*!40000 ALTER TABLE `character_experience_adjust` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_experience_adjust` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_experience_bonus`
+--
+
+DROP TABLE IF EXISTS `character_experience_bonus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_experience_bonus` (
+  `race_1` tinyint unsigned NOT NULL,
+  `race_2` tinyint unsigned DEFAULT NULL,
+  `race_3` tinyint unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_experience_bonus`
+--
+
+LOCK TABLES `character_experience_bonus` WRITE;
+/*!40000 ALTER TABLE `character_experience_bonus` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_experience_bonus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_experience_table`
+--
+
+DROP TABLE IF EXISTS `character_experience_table`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_experience_table` (
+  `level_min` smallint DEFAULT NULL,
+  `level_max` smallint DEFAULT NULL,
+  `experience_rate` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_experience_table`
+--
+
+LOCK TABLES `character_experience_table` WRITE;
+/*!40000 ALTER TABLE `character_experience_table` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_experience_table` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `character_skill`
+--
+
+DROP TABLE IF EXISTS `character_skill`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_skill` (
+  `race` tinyint unsigned NOT NULL,
+  `skill` smallint unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_skill`
+--
+
+LOCK TABLES `character_skill` WRITE;
+/*!40000 ALTER TABLE `character_skill` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_skill` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_contribution_reward`
+--
+
+DROP TABLE IF EXISTS `event_contribution_reward`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `event_contribution_reward` (
+  `event_id` tinyint unsigned NOT NULL,
+  `event_ground` tinyint unsigned DEFAULT NULL,
+  `contribution_min` int DEFAULT NULL,
+  `contribution_max` int DEFAULT NULL,
+  `reward_box` smallint unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_contribution_reward`
+--
+
+LOCK TABLES `event_contribution_reward` WRITE;
+/*!40000 ALTER TABLE `event_contribution_reward` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_contribution_reward` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_manager`
+--
+
+DROP TABLE IF EXISTS `event_manager`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `event_manager` (
+  `server` smallint unsigned NOT NULL,
+  `event_id` tinyint unsigned DEFAULT NULL,
+  `invasion` int unsigned DEFAULT NULL,
+  `duration` int unsigned DEFAULT NULL,
+  `notify_time` int unsigned DEFAULT NULL,
+  `hour` tinyint unsigned DEFAULT NULL,
+  `minute` tinyint unsigned DEFAULT NULL,
+  `day_of_week` tinyint unsigned DEFAULT NULL,
+  `day_of_month` tinyint unsigned DEFAULT NULL,
+  `season_event` tinyint unsigned DEFAULT NULL,
+  `exclusive_server` smallint NOT NULL DEFAULT '-1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_manager`
+--
+
+LOCK TABLES `event_manager` WRITE;
+/*!40000 ALTER TABLE `event_manager` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_manager` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_season_manager`
+--
+
+DROP TABLE IF EXISTS `event_season_manager`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `event_season_manager` (
+  `event` tinyint unsigned NOT NULL,
+  `name` text,
+  `start_date` bigint unsigned DEFAULT NULL,
+  `end_date` bigint unsigned DEFAULT NULL,
+  `ocurrence` int unsigned DEFAULT NULL,
+  `duration` int unsigned DEFAULT NULL,
+  `start_message` text,
+  `end_message` text,
+  PRIMARY KEY (`event`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_season_manager`
+--
+
+LOCK TABLES `event_season_manager` WRITE;
+/*!40000 ALTER TABLE `event_season_manager` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_season_manager` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `misc_non_pk_time`
+--
+
+DROP TABLE IF EXISTS `misc_non_pk_time`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `misc_non_pk_time` (
+  `server` smallint unsigned NOT NULL,
+  `start_hour` tinyint unsigned DEFAULT NULL,
+  `start_minute` tinyint unsigned DEFAULT NULL,
+  `end_hour` tinyint unsigned DEFAULT NULL,
+  `end_minute` tinyint unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `misc_non_pk_time`
+--
+
+LOCK TABLES `misc_non_pk_time` WRITE;
+/*!40000 ALTER TABLE `misc_non_pk_time` DISABLE KEYS */;
+/*!40000 ALTER TABLE `misc_non_pk_time` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `monster`
+--
+
+DROP TABLE IF EXISTS `monster`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `monster` (
+  `server` smallint unsigned NOT NULL,
+  `guid` smallint unsigned NOT NULL,
+  `id` smallint unsigned NOT NULL,
+  `type` tinyint unsigned NOT NULL DEFAULT '0',
+  `name` varchar(32) DEFAULT NULL,
+  `world` smallint unsigned NOT NULL,
+  `x1` smallint NOT NULL,
+  `y1` smallint NOT NULL,
+  `x2` smallint NOT NULL,
+  `y2` smallint NOT NULL,
+  `direction` tinyint NOT NULL,
+  `spawn_delay` int unsigned NOT NULL DEFAULT '0',
+  `spawn_distance` tinyint unsigned DEFAULT NULL,
+  `respawn_time_min` int unsigned DEFAULT NULL,
+  `respawn_time_max` int unsigned DEFAULT NULL,
+  `respawn_id` int unsigned DEFAULT NULL,
+  `move_distance` tinyint NOT NULL DEFAULT '0',
+  `npc_function` text,
+  `item_bag` text,
+  `script_name` text,
+  `elemental_attribute` tinyint unsigned NOT NULL DEFAULT '0',
+  `disabled` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `monster`
+--
+
+LOCK TABLES `monster` WRITE;
+/*!40000 ALTER TABLE `monster` DISABLE KEYS */;
+/*!40000 ALTER TABLE `monster` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `monster_respawn_location`
+--
+
+DROP TABLE IF EXISTS `monster_respawn_location`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `monster_respawn_location` (
+  `server` smallint unsigned NOT NULL,
+  `group` int unsigned DEFAULT NULL,
+  `world` smallint unsigned DEFAULT NULL,
+  `x1` smallint DEFAULT NULL,
+  `y1` smallint DEFAULT NULL,
+  `x2` smallint DEFAULT NULL,
+  `y2` smallint DEFAULT NULL,
+  `direction` tinyint DEFAULT NULL,
+  `instance` int DEFAULT NULL,
+  `rate` tinyint unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `monster_respawn_location`
+--
+
+LOCK TABLES `monster_respawn_location` WRITE;
+/*!40000 ALTER TABLE `monster_respawn_location` DISABLE KEYS */;
+/*!40000 ALTER TABLE `monster_respawn_location` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `monster_template`
+--
+
+DROP TABLE IF EXISTS `monster_template`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `monster_template` (
+  `id` smallint unsigned NOT NULL,
+  `name` varchar(32) DEFAULT NULL,
+  `model` smallint unsigned DEFAULT NULL,
+  `size` float DEFAULT NULL,
+  `type` tinyint unsigned DEFAULT NULL,
+  `min_level` smallint DEFAULT NULL,
+  `max_level` smallint DEFAULT NULL,
+  `life` int DEFAULT NULL,
+  `mana` int DEFAULT NULL,
+  `shield` int DEFAULT NULL,
+  `stamina` int DEFAULT NULL,
+  `attack_min_damage` int DEFAULT NULL,
+  `attack_max_damage` int DEFAULT NULL,
+  `magic_min_damage` int DEFAULT NULL,
+  `magic_max_damage` int DEFAULT NULL,
+  `critical_damage_rate` int DEFAULT NULL,
+  `critical_damage_add` int DEFAULT NULL,
+  `excellent_damage_rate` int DEFAULT NULL,
+  `excellent_damage_add` int DEFAULT NULL,
+  `attack_success` int DEFAULT NULL,
+  `defense` int DEFAULT NULL,
+  `defense_magic` int DEFAULT NULL,
+  `defense_success` int DEFAULT NULL,
+  `move_range` int unsigned DEFAULT NULL,
+  `move_speed` int unsigned DEFAULT NULL,
+  `attack_range` int unsigned DEFAULT NULL,
+  `attack_speed` int DEFAULT NULL,
+  `view_range` int unsigned DEFAULT NULL,
+  `resistance_ice` tinyint unsigned DEFAULT NULL,
+  `resistance_poison` tinyint unsigned DEFAULT NULL,
+  `resistance_lightning` tinyint unsigned DEFAULT NULL,
+  `resistance_fire` tinyint unsigned DEFAULT NULL,
+  `resistance_earth` tinyint unsigned DEFAULT NULL,
+  `resistance_wind` tinyint unsigned DEFAULT NULL,
+  `resistance_water` tinyint unsigned DEFAULT NULL,
+  `respawn_time_min` int unsigned DEFAULT NULL,
+  `respawn_time_max` int unsigned DEFAULT NULL,
+  `item_rate` int DEFAULT NULL,
+  `zen_rate` int DEFAULT NULL,
+  `item_max_level` int DEFAULT NULL,
+  `regen_power_life` float DEFAULT NULL,
+  `regen_time_life` int unsigned DEFAULT NULL,
+  `regen_power_mana` float DEFAULT NULL,
+  `regen_time_mana` int unsigned DEFAULT NULL,
+  `regen_power_shield` float DEFAULT NULL,
+  `regen_time_shield` int unsigned DEFAULT NULL,
+  `regen_power_stamina` float DEFAULT NULL,
+  `regen_time_stamina` int unsigned DEFAULT NULL,
+  `faction` tinyint unsigned DEFAULT NULL,
+  `faction_level` tinyint unsigned DEFAULT NULL,
+  `script_name` text,
+  `elemental_attribute` tinyint unsigned DEFAULT NULL,
+  `elemental_pattern` int DEFAULT NULL,
+  `elemental_defense` int DEFAULT NULL,
+  `elemental_damage_min` int DEFAULT NULL,
+  `elemental_damage_max` int DEFAULT NULL,
+  `elemental_attack_rate` int DEFAULT NULL,
+  `elemental_defense_rate` int DEFAULT NULL,
+  `radiance_immune` tinyint unsigned DEFAULT NULL,
+  `debuff_resistance` int DEFAULT NULL,
+  `debuff_defense` int DEFAULT NULL,
+  `critical_damage_resistance` tinyint unsigned DEFAULT NULL,
+  `excellent_damage_resistance` tinyint unsigned DEFAULT NULL,
+  `damage_absorb` tinyint unsigned DEFAULT NULL,
+  `elite` tinyint DEFAULT NULL,
+  `disabled` tinyint DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='			';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `monster_template`
+--
+
+LOCK TABLES `monster_template` WRITE;
+/*!40000 ALTER TABLE `monster_template` DISABLE KEYS */;
+/*!40000 ALTER TABLE `monster_template` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notice`
+--
+
+DROP TABLE IF EXISTS `notice`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notice` (
+  `server` smallint unsigned NOT NULL,
+  `notice` text,
+  `type` tinyint unsigned DEFAULT NULL,
+  `world` smallint unsigned DEFAULT NULL,
+  `flag` tinyint unsigned DEFAULT NULL,
+  `time` int unsigned DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notice`
+--
+
+LOCK TABLES `notice` WRITE;
+/*!40000 ALTER TABLE `notice` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notice` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `quest_mu`
+--
+
+DROP TABLE IF EXISTS `quest_mu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quest_mu` (
+  `ID` smallint unsigned NOT NULL,
+  `Name` text,
+  `Server` tinyint unsigned DEFAULT NULL,
+  `Day` tinyint unsigned DEFAULT NULL,
+  `TemplateType1` tinyint unsigned DEFAULT NULL,
+  `Chapter` tinyint unsigned DEFAULT NULL,
+  `Category` tinyint unsigned DEFAULT NULL,
+  `Importance` tinyint unsigned DEFAULT NULL,
+  `StartType` tinyint unsigned DEFAULT NULL,
+  `StartSubType` smallint unsigned DEFAULT NULL,
+  `LevelMin` smallint unsigned DEFAULT NULL,
+  `LevelMax` smallint unsigned DEFAULT NULL,
+  `RepeatCycle` tinyint DEFAULT NULL,
+  `PrecedenceQuest` smallint DEFAULT NULL,
+  `StartItemType` tinyint DEFAULT NULL,
+  `StartItemIndex` smallint DEFAULT NULL,
+  `CheckGens` tinyint DEFAULT NULL,
+  `Zen` int DEFAULT NULL,
+  `DarkWizard` tinyint unsigned DEFAULT NULL,
+  `DarkKnight` tinyint unsigned DEFAULT NULL,
+  `FairyElf` tinyint unsigned DEFAULT NULL,
+  `MagicGladiator` tinyint unsigned DEFAULT NULL,
+  `DarkLord` tinyint unsigned DEFAULT NULL,
+  `Summoner` tinyint unsigned DEFAULT NULL,
+  `RageFighter` tinyint unsigned DEFAULT NULL,
+  `GrowLancer` tinyint unsigned DEFAULT NULL,
+  `RuneWizard` tinyint unsigned DEFAULT NULL,
+  `Slayer` tinyint unsigned DEFAULT NULL,
+  `GunCrusher` tinyint unsigned DEFAULT NULL,
+  `AddClass1` tinyint unsigned DEFAULT NULL,
+  `TemplateType2` tinyint unsigned DEFAULT NULL,
+  `ObjectiveType` tinyint unsigned DEFAULT NULL,
+  `ObjectiveMainType` smallint DEFAULT NULL,
+  `ObjectiveMainSubType` smallint DEFAULT NULL,
+  `TargetNumber` smallint DEFAULT NULL,
+  `TargetMaxLevel` smallint DEFAULT NULL,
+  `DropRate` smallint DEFAULT NULL,
+  `GateID` smallint unsigned DEFAULT NULL,
+  `MapID` smallint unsigned DEFAULT NULL,
+  `X` tinyint unsigned DEFAULT NULL,
+  `Y` tinyint unsigned DEFAULT NULL,
+  `RewardExperience` int DEFAULT NULL,
+  `RewardZen` int DEFAULT NULL,
+  `RewardGensPoints` tinyint unsigned DEFAULT NULL,
+  `quest_mucol` varchar(45) DEFAULT NULL,
+  `RewardItemType01` tinyint DEFAULT NULL,
+  `RewardItemIndex01` smallint DEFAULT NULL,
+  `RewardItemCount01` smallint DEFAULT NULL,
+  `RewardItemType02` tinyint DEFAULT NULL,
+  `RewardItemIndex02` smallint DEFAULT NULL,
+  `RewardItemCount02` smallint DEFAULT NULL,
+  `RewardItemType03` tinyint DEFAULT NULL,
+  `RewardItemIndex03` smallint DEFAULT NULL,
+  `RewardItemCount03` smallint DEFAULT NULL,
+  `RewardType` smallint DEFAULT NULL,
+  `RewardSubType` smallint DEFAULT NULL,
+  `RewardNumber` smallint DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quest_mu`
+--
+
+LOCK TABLES `quest_mu` WRITE;
+/*!40000 ALTER TABLE `quest_mu` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quest_mu` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2021-03-04 10:20:05
